@@ -1,0 +1,41 @@
+version: "3.8"
+networks:
+  backend:
+services:
+  db_postgresql:
+    container_name: postgresql_container
+    image: postgres:14.2-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+  redis:
+    restart: always
+    image: redis:7-alpine
+    container_name: redis_container
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+  pgadmin:
+    container_name: pgadmin_container_all
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "5000:80"
+    depends_on:
+      - db_postgresql
+volumes:
+  postgres_data:

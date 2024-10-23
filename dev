@@ -1,0 +1,19 @@
+#!/bin/bash
+
+case "$1" in
+  "docker")
+    docker compose up -d
+
+    sleep 5
+
+    docker compose run --rm web bundle exec sidekiq -q default -q mailers
+
+    ;;
+  "tailwind")
+    docker compose run --rm web yarn watch
+    ;;
+  *)
+    echo "Run with: ./dev [docker | tailwind]"
+    exit 1
+    ;;
+esac
