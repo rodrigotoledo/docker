@@ -26,16 +26,5 @@ services:
       - "6379:6379"
     networks:
       - backend
-  pgadmin:
-    container_name: pgadmin_container_all
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin"
-    ports:
-      - "5000:80"
-    depends_on:
-      - db_postgresql
 volumes:
   postgres_data:
