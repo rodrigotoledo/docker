@@ -1,17 +1,50 @@
-# Use a imagem Ruby oficial com a versão 3.1
-FROM ruby:3.1
+ARG RUBY_VERSION=3.4.2
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
-# Atualize o sistema e instale as dependências
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+# UID/GID vindos do docker-compose.yml (definidos com id -u / id -g no .env)
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
-# Crie um diretório de trabalho no contêiner
+# Instala dependências do sistema
+RUN apt-get update -qq && apt-get install -y \
+  curl \
+  libjemalloc2 \
+  libvips \
+  vim \
+  sqlite3 \
+  libsqlite3-dev \
+  libyaml-dev \
+  libpq-dev \
+  postgresql-client \
+  build-essential \
+  pkg-config \
+  sudo \
+  git \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Cria grupo e usuário com mesmo UID/GID do host
+RUN groupadd -g ${GROUP_ID} appuser && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -m appuser && \
+    echo "appuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Cria diretórios de app/log/tmp/db com permissões
+RUN mkdir -p /app/tmp /app/log /app/db && \
+    chown -R appuser:appuser /app && \
+    chmod -R 775 /app/tmp /app/log /app/db && \
+    chmod g+s /app/db /app/tmp /app/log
+
+USER appuser
 WORKDIR /app
 
-# Copie o Gemfile e o Gemfile.lock para o contêiner
-COPY Gemfile ./
+# Copia Gemfile e instala gems
+COPY --chown=appuser:appuser Gemfile* ./
+RUN gem install bundler foreman && \
+    bundle lock --add-platform x86_64-linux && \
+    bundle install
 
-# Instale as gemas
-RUN bundle install
+# Copia o restante do projeto
+COPY --chown=appuser:appuser . /app
+RUN rm -rf tmp/*
 
 # Copie todo o código fonte para o contêiner
 COPY . .

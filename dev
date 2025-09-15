@@ -1,19 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-case "$1" in
-  "docker")
-    docker compose up -d
+if ! gem list foreman -i --silent; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
 
-    sleep 5
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
 
-    docker compose run --rm web bundle exec sidekiq -q default -q mailers
+# Let the debug gem allow remote connections,
+# but avoid loading until `debugger` is called
+export RUBY_DEBUG_OPEN="true"
+export RUBY_DEBUG_LAZY="true"
 
-    ;;
-  "tailwind")
-    docker compose run --rm web yarn watch
-    ;;
-  *)
-    echo "Run with: ./dev [docker | tailwind]"
-    exit 1
-    ;;
-esac
+exec foreman start -f Procfile.dev "$@"

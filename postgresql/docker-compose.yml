@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   postgresql:
-    container_name: postgresql_container
-    image: postgres:13
+    container_name: postgresql_container_docker
+    image: postgres:14.2-alpine
     restart: always
     ports:
       - "5432:5432"
