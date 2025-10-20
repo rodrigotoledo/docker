@@ -2,7 +2,7 @@ version: "3.8"
 
 networks:
   shared:
-    driver: bridge
+    external: true
 
 services:
   postgres:
@@ -23,8 +23,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    env_file:
-      - .env
+
   admin:
     image: adminer
     ports:
