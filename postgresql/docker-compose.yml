@@ -1,8 +1,5 @@
-version: "3.8"
-
 networks:
   shared:
-    external: true
 
 services:
   postgres:
@@ -10,7 +7,7 @@ services:
     networks:
       - shared
     environment:
-      POSTGRES_DB: tiktok_clone_python_development
+      POSTGRES_DB: doc_ai_assistant_development
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
