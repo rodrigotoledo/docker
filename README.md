@@ -17,6 +17,17 @@ There may be other files and folders in this repository used for local developme
 
 These examples assume you have Docker and Docker Compose installed on your machine.
 
+### Clear everything in your docker
+
+```bash
+docker stop $(docker ps -aq) || true
+docker rm $(docker ps -aq) || true
+docker rmi $(docker images -q) || true
+docker volume rm $(docker volume ls -q) || true
+docker network prune -f || true
+docker image prune -a -f || true
+```
+
 ### Start a service with docker-compose
 
 From the folder containing the compose file, run:
