@@ -2,11 +2,13 @@ networks:
   shared:
 
 services:
-  postgres:
-    image: postgres:15
+  db_postgresql:
+    image: ankane/pgvector:latest     # <-- ESSA É A MÁGICA
+    container_name: pgvector
     networks:
       - shared
     environment:
+      DB_HOST: db_postgresql
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -29,7 +31,7 @@ services:
     environment:
       - ADMINER_DEFAULT_SERVER=postgres
     depends_on:
-      - postgres
+      - db_postgresql
 
 volumes:
   postgres_data:
