@@ -26,8 +26,9 @@ docker rmi $(docker images -q) || true
 docker volume rm $(docker volume ls -q) || true
 docker network prune -f || true
 docker image prune -a -f || true
-docker system prune -a --volumes -f
-docker builder prune -a -f
+docker system prune -a --volumes -f || true
+docker builder prune -a -f || true
+docker swarm leave --force || true
 ```
 
 ### Start a service with docker-compose
